@@ -1,0 +1,4 @@
+(play artist|play from|play something from) (?P<artistWord>.*)
+(play song|play track) (?P<songWord>.*)
+(play album) (?P<albumWord>.*)
+(1,|1\.) (the current song|the title of current song)

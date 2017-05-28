@@ -18,9 +18,18 @@ class MPDSkill(MycroftSkill):
         super(MPDSkill, self).__init__(name="MPDSkill")
 
     def initialize(self):
-        self.player = client = MPDClient()
-        self.player.connect("192.168.43.240", 6600)
-        playIntent = IntentBuilder("PlayIntent").require("PlayKeyword").build()
+        self.player = MPDClient()
+        self.url = "192.168.8.102"
+        self.port = 6600
+        self.player.connect(self.url, self.port)
+        self.reconnectMsg = "Have to reconnect, please try again"
+        playArtistIntent = IntentBuilder("PlayArtistIntent").require("PlayArtistKeyword").require("artistWord").build()
+        self.register_intent(playArtistIntent, self.handle_playArtistIntent)
+        playAlbumIntent = IntentBuilder("PlayAlbumIntent").require("PlayAlbumKeyword").require("albumWord").build()
+        self.register_intent(playAlbumIntent, self.handle_playAlbumIntent)
+        playSongIntent = IntentBuilder("PlaySongIntent").require("PlaySongKeyword").require("songWord").build()
+        self.register_intent(playSongIntent, self.handle_playSongIntent)
+        playIntent = IntentBuilder("PlayIntent").require("Play3333Keyword").build()
         self.register_intent(playIntent, self.handle_playIntent)
         pauseIntent = IntentBuilder("PauseIntent").require("PauseKeyword").build()
         self.register_intent(pauseIntent, self.handle_pauseIntent)
@@ -31,6 +40,8 @@ class MPDSkill(MycroftSkill):
         previousIntent = IntentBuilder("PreviousIntent").require("LastKeyword").build()
         self.register_intent(previousIntent, self.handle_previousIntent)
         
+  
+        
         currentsongIntent = IntentBuilder("CurrentSongIntent").require("CurrentSongKeyword").build()
         self.register_intent(currentsongIntent, self.handle_currentsongIntent)
         
@@ -39,8 +50,9 @@ class MPDSkill(MycroftSkill):
             songinfo = self.player.currentsong()
             self.speak("You listen song "+songinfo['track'].replace("/", " from ")+", "+songinfo['title']+" from "+songinfo['artist'])
         except:
+            self.speak(self.reconnectMsg)
             self.player = client = MPDClient()
-            self.player.connect("192.168.43.240", 6600)
+            self.player.connect(self.url, self.port)
     
     def handle_previousIntent(self, message):
         try:
@@ -48,8 +60,9 @@ class MPDSkill(MycroftSkill):
             songinfo = self.player.currentsong()
             self.speak("Change to song "+songinfo['track'].replace("/", " from "))
         except:
+            self.speak(self.reconnectMsg)
             self.player = client = MPDClient()
-            self.player.connect("192.168.43.240", 6600)
+            self.player.connect(self.url, self.port)
             
     def handle_nextIntent(self, message):
         try:
@@ -57,31 +70,73 @@ class MPDSkill(MycroftSkill):
             songinfo = self.player.currentsong()
             self.speak("Change to song "+songinfo['track'].replace("/", " from "))
         except:
+            self.speak(self.reconnectMsg)
             self.player = client = MPDClient()
-            self.player.connect("192.168.43.240", 6600)
+            self.player.connect(self.url, self.port)
         
     def handle_playIntent(self, message):
         self.speak("play")
         try:
             self.player.play()
         except:
+            self.speak(self.reconnectMsg)
             self.player = client = MPDClient()
-            self.player.connect("192.168.43.240", 6600)
+            self.player.connect(self.url, self.port)
+            
+    def handle_playArtistIntent(self, message):
+        artist1 = message.data.get("artistWord")
+        try:
+            self.player.clear()
+            self.player.searchadd('Artist',artist1)
+            self.speak("Ok, i play music from "+artist1)
+            self.player.play()
+        except:
+            self.speak(self.reconnectMsg)
+            self.player = client = MPDClient()
+            self.player.connect(self.url, self.port)
+            
+            
+    def handle_playSongIntent(self, message):
+        artist1 = message.data.get("songWord")
+        try:
+            self.player.clear()
+            self.player.searchadd('Title',artist1)
+            self.speak("Ok, i play song "+artist1)
+            self.player.play()
+        except:
+            self.speak(self.reconnectMsg)
+            self.player = client = MPDClient()
+            self.player.connect(self.url, self.port)
+            
+    def handle_playAlbumIntent(self, message):
+        artist1 = message.data.get("albumWord")
+        try:
+            self.player.clear()
+            self.player.searchadd('Album',artist1)
+            self.speak("Ok, i play album "+artist1)
+            self.player.play()
+        except:
+            self.speak(self.reconnectMsg)
+            self.player = client = MPDClient()
+            self.player.connect(self.url, self.port)
+
             
     def handle_pauseIntent(self, message):
         self.speak("make pause")
         try:
             self.player.pause()
         except:
+            self.speak(self.reconnectMsg)
             self.player = client = MPDClient()
-            self.player.connect("192.168.43.240", 6600)
+            self.player.connect(self.url, self.port)
     def handle_stopIntent(self, message):
         self.speak("make stop")
         try:
             self.player.stop()
         except:
+            self.speak(self.reconnectMsg)
             self.player = client = MPDClient()
-            self.player.connect("192.168.43.240", 6600)
+            self.player.connect(self.url, self.port)
             
 
 def create_skill():

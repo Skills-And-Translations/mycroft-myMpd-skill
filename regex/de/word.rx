@@ -1,4 +1,4 @@
 (spiele von|spiele etwas von) (?P<artistWord>.*)
 (spiele song|spiele lied) (?P<songWord>.*)
 (spiele album) (?P<albumWord>.*)
-(1,|1\.) (ist der titel des momentanen lieds|hoere ich da)
+(1,|1\.) (ist der titel des momentanen lieds|höre ich da)
